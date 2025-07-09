@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prototipo Integrado - Chicharronería Juancho</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .brand-color { color: #D97706; }
+        .bg-brand { background-color: #D97706; }
+        .border-brand { border-color: #D97706; }
+        .hover-bg-brand:hover { background-color: #B45309; }
+        .shadow-lg-brand { box-shadow: 0 10px 15px -3px rgba(217, 119, 6, 0.2), 0 4px 6px -2px rgba(217, 119, 6, 0.1); }
+        .animate-fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Estilos del Chatbot de WhatsApp */
+        .whatsapp-bg {
+            background-image: url('https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg');
+        }
+        .chat-bubble-bot {
+            background-color: #FFFFFF;
+            align-self: flex-start;
+        }
+        .chat-bubble-user {
+            background-color: #DCF8C6;
+            align-self: flex-end;
+        }
+        .animate-pop-in {
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #999;
+            animation: bounce 1.3s infinite;
+        }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-6px); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div id="app" class="w-full max-w-7xl mx-auto p-4">
+
+        <!-- Contenedor del Mockup -->
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200">
+            
+            <header class="bg-gray-800 p-4 flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <span class="w-3 h-3 bg-red-500 rounded-full"></span>
+                    <span class="w-3 h-3 bg-yellow-500 rounded-full"></span>
+                    <span class="w-3 h-3 bg-green-500 rounded-full"></span>
+                </div>
+                <div class="text-gray-400 text-sm">
+                    <i class="fas fa-wifi mr-2"></i> ChicharroneriaJuancho.pe
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button id="client-view-btn" class="px-3 py-1 text-sm bg-brand text-white rounded-md hover-bg-brand transition-colors">Vista Cliente</button>
+                    <button id="admin-view-btn" class="px-3 py-1 text-sm bg-gray-600 text-white rounded-md hover:bg-gray-500 transition-colors">Vista Admin</button>
+                </div>
+            </header>
+
+            <main id="main-content" class="min-h-[80vh]"></main>
+
+        </div>
+        <p class="text-center text-xs text-gray-500 mt-4">Este es un prototipo funcional interactivo. No es un sitio web real. Creado para el proyecto de Sistemas de Información.</p>
+
+    </div>
+
+    <!-- Plantilla Vista Cliente -->
+    <template id="client-view-template">
+        <div class="animate-fade-in">
+            <nav class="bg-white shadow-md sticky top-0 z-10">
+                <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+                    <div class="text-2xl font-bold text-gray-800">
+                        <i class="fas fa-bacon brand-color"></i>
+                        Chicharronería <span class="brand-color">Juancho</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <a href="#menu" class="text-gray-600 hover:text-brand transition">Menú</a>
+                        <a href="#contacto" class="text-gray-600 hover:text-brand transition">Contacto</a>
+                        <button id="cart-btn" class="relative text-gray-600 hover:text-brand transition">
+                            <i class="fas fa-shopping-cart text-xl"></i>
+                            <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                        </button>
+                    </div>
+                </div>
+            </nav>
+
+            <header class="bg-yellow-50 text-center py-20 px-6">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">El Sabor Tradicional de Chilca</h1>
+                <p class="text-lg text-gray-600 mb-8">Disfruta del auténtico chicharrón, preparado con la receta de siempre. ¡Pide ahora!</p>
+                <a href="#menu" class="bg-brand text-white font-bold py-3 px-8 rounded-full hover-bg-brand transition-transform transform hover:scale-105 shadow-lg-brand">Ver Menú y Pedir</a>
+                <div class="mt-8 text-gray-500">
+                    <p class="mb-2">Acceso rápido desde nuestras redes:</p>
+                    <div class="flex justify-center space-x-6">
+                        <a href="#" class="text-2xl hover:text-blue-600 transition"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-2xl hover:text-pink-500 transition"><i class="fab fa-instagram"></i></a>
+                        <button id="open-chatbot-btn" class="text-2xl hover:text-green-500 transition"><i class="fab fa-whatsapp"></i></button>
+                    </div>
+                </div>
+            </header>
+
+            <section id="menu" class="py-16 bg-white">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Nuestro Menú</h2>
+                    <div id="menu-items" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+                </div>
+            </section>
+
+            <section id="contacto" class="py-16 bg-gray-50">
+                <div class="container mx-auto px-6 text-center">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Visítanos o Pide Escaneando</h2>
+                    <p class="text-gray-600 mb-8">Encuéntranos en el corazón de Chilca o escanea el código QR en nuestro local para ver el menú al instante.</p>
+                    <div class="flex flex-col md:flex-row justify-center items-center gap-12">
+                        <div>
+                            <img src="https://placehold.co/200x200/eab308/ffffff?text=QR" alt="Código QR" class="mx-auto rounded-lg shadow-md">
+                            <p class="mt-4 font-semibold">Escanéame</p>
+                        </div>
+                        <div class="text-left">
+                            <p class="flex items-center text-lg mb-2"><i class="fas fa-map-marker-alt brand-color w-6 mr-2"></i> Av. Principal 123, Chilca, Perú</p>
+                            <p class="flex items-center text-lg"><i class="fas fa-phone brand-color w-6 mr-2"></i> +51 987 654 321</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Modals de la web -->
+            <div id="cart-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-end">
+                <div class="bg-white w-full max-w-md h-full shadow-lg p-6 flex flex-col animate-fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold">Tu Pedido</h3>
+                        <button id="close-cart-btn" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+                    </div>
+                    <div id="cart-items-container" class="flex-grow overflow-y-auto"></div>
+                    <div class="border-t pt-4 mt-4">
+                        <div class="flex justify-between font-bold text-lg mb-4">
+                            <span>Total</span>
+                            <span id="cart-total">S/ 0.00</span>
+                        </div>
+                        <button id="checkout-btn" class="w-full bg-brand text-white font-bold py-3 rounded-md hover-bg-brand transition disabled:bg-gray-400">Proceder al Pago</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="checkout-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4">
+                <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-lg animate-fade-in">
+                    <h3 class="text-2xl font-bold mb-6 text-center">Finalizar Compra</h3>
+                    <form id="checkout-form">
+                        <div class="mb-4"><label for="name" class="block text-sm font-medium text-gray-700">Nombre Completo</label><input type="text" id="name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand" required></div>
+                        <div class="mb-4"><label for="phone" class="block text-sm font-medium text-gray-700">Teléfono (WhatsApp)</label><input type="tel" id="phone" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand" required></div>
+                        <div class="mb-6"><label class="block text-sm font-medium text-gray-700 mb-2">Método de Entrega</label><div class="flex space-x-4"><label class="flex items-center"><input type="radio" name="delivery" value="pickup" class="focus:ring-brand h-4 w-4 text-brand border-gray-300" checked> <span class="ml-2">Recojo en tienda</span></label><label class="flex items-center"><input type="radio" name="delivery" value="delivery" class="focus:ring-brand h-4 w-4 text-brand border-gray-300"> <span class="ml-2">Delivery</span></label></div></div>
+                        <div class="mb-6"><label class="block text-sm font-medium text-gray-700 mb-2">Método de Pago</label><div class="flex items-center space-x-4"><img src="https://seeklogo.com/images/Y/yape-logo-3667411655-seeklogo.com.png" alt="Yape" class="h-8"><img src="https://seeklogo.com/images/P/plin-logo-9673413333-seeklogo.com.png" alt="Plin" class="h-8"><i class="fab fa-cc-visa text-3xl text-blue-800"></i><i class="fab fa-cc-mastercard text-3xl text-orange-500"></i></div></div>
+                        <button type="submit" class="w-full bg-brand text-white font-bold py-3 rounded-md hover-bg-brand transition">Confirmar Pedido</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div id="confirmation-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4">
+                <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md text-center animate-fade-in">
+                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4"><i class="fas fa-check text-green-600 text-2xl"></i></div>
+                    <h3 class="text-2xl font-bold mb-2">¡Pedido Recibido!</h3>
+                    <p class="text-gray-600 mb-6">Tu pedido <strong id="order-id-confirm">#1001</strong> está en preparación. Gracias por preferirnos.</p>
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg text-left"><h4 class="font-bold text-yellow-800">¡Únete a nuestro club!</h4><p class="text-sm text-yellow-700">Regístrate para recibir promociones exclusivas y descuentos en tu próxima compra.</p><button id="register-crm-btn" class="mt-3 bg-yellow-500 text-white text-sm font-bold py-2 px-4 rounded-md hover:bg-yellow-600 transition">Registrarme ahora</button></div>
+                    <button id="close-confirmation-btn" class="mt-6 text-sm text-gray-500 hover:text-gray-800">Cerrar</button>
+                </div>
+            </div>
+
+            <!-- Modal del Chatbot de WhatsApp -->
+            <div id="chatbot-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
+                <div class="w-full max-w-sm h-[85vh] max-h-[700px] flex flex-col bg-white rounded-[40px] shadow-2xl border-8 border-black overflow-hidden relative animate-fade-in">
+                    <button id="close-chatbot-btn" class="absolute top-2 right-2 text-white bg-black bg-opacity-50 rounded-full h-8 w-8 flex items-center justify-center z-20 hover:bg-opacity-75">&times;</button>
+                    <header class="bg-[#075E54] text-white p-3 flex items-center shadow-md z-10 flex-shrink-0">
+                        <img src="https://placehold.co/40x40/D97706/FFFFFF?text=J" alt="Logo" class="rounded-full">
+                        <div class="ml-3"><h1 class="font-bold text-lg">Chicharronería Juancho</h1><p class="text-xs text-gray-200">en línea</p></div>
+                    </header>
+                    <main id="chat-window" class="flex-grow p-4 overflow-y-auto whatsapp-bg flex flex-col space-y-3"></main>
+                    <footer id="input-area" class="bg-gray-100 p-2 border-t flex-shrink-0">
+                        <div id="options-container" class="grid grid-cols-2 gap-2"></div>
+                        <div class="mt-2 text-center text-xs text-gray-400"><i class="fas fa-lock"></i> Toca una opción para responder</div>
+                    </footer>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Plantilla Vista Admin -->
+    <template id="admin-view-template">
+        <div class="flex h-full bg-gray-50 animate-fade-in">
+            <aside class="w-64 bg-gray-800 text-white flex flex-col">
+                <div class="p-6 text-center border-b border-gray-700"><h2 class="text-xl font-bold">Admin Juancho</h2><p class="text-xs text-gray-400">Panel de Gestión</p></div>
+                <nav class="flex-grow p-4">
+                    <a href="#pedidos" class="admin-tab-btn flex items-center px-4 py-3 rounded-md bg-gray-700 transition"><i class="fas fa-receipt w-6 mr-3"></i> Pedidos</a>
+                    <a href="#clientes" class="admin-tab-btn flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition mt-2"><i class="fas fa-users w-6 mr-3"></i> Clientes (CRM)</a>
+                    <a href="#reportes" class="admin-tab-btn flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition mt-2"><i class="fas fa-chart-line w-6 mr-3"></i> Reportes</a>
+                </nav>
+            </aside>
+            <div class="flex-grow p-8 overflow-y-auto">
+                <div id="admin-pedidos" class="admin-content"><h3 class="text-3xl font-bold text-gray-800 mb-6">Gestión de Pedidos en Tiempo Real</h3><div id="orders-container" class="grid lg:grid-cols-2 xl:grid-cols-3 gap-6"></div></div>
+                <div id="admin-clientes" class="admin-content hidden"><h3 class="text-3xl font-bold text-gray-800 mb-6">Base de Datos de Clientes (Mini-CRM)</h3><div class="bg-white p-6 rounded-lg shadow-md"><table class="w-full text-left"><thead><tr class="border-b"><th class="p-3">Nombre</th><th class="p-3">Contacto</th><th class="p-3">Último Pedido</th><th class="p-3">Segmento</th><th class="p-3">Acciones</th></tr></thead><tbody id="customers-table-body"></tbody></table></div></div>
+                <div id="admin-reportes" class="admin-content hidden"><h3 class="text-3xl font-bold text-gray-800 mb-6">Reportes de Negocio</h3><div class="grid md:grid-cols-2 gap-8"><div class="bg-white p-6 rounded-lg shadow-md"><h4 class="font-bold text-lg mb-4">Platos más Vendidos</h4><canvas id="top-dishes-chart"></canvas></div><div class="bg-white p-6 rounded-lg shadow-md"><h4 class="font-bold text-lg mb-4">Picos de Venta por Día</h4><canvas id="sales-by-day-chart"></canvas></div></div></div>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- ESTADO GLOBAL DE LA APLICACIÓN ---
+            const state = {
+                currentView: 'client',
+                products: [
+                    { id: 1, name: 'Pan con Chicharrón', price: 15.00, image: 'https://placehold.co/600x400/f9d423/333333?text=Chicharr%C3%B3n', description: 'Crujiente panceta de cerdo, camote frito y salsa criolla en pan francés.' },
+                    { id: 2, name: 'Tamal Criollo', price: 8.00, image: 'https://placehold.co/600x400/f8a5c2/333333?text=Tamal', description: 'Suave masa de maíz rellena de pollo o cerdo, envuelta en hoja de plátano.' },
+                    { id: 3, name: 'Relleno', price: 7.00, image: 'https://placehold.co/600x400/8fd9a8/333333?text=Relleno', description: 'Morcilla tradicional con hierbabuena y especias, servida con camote.' },
+                    { id: 4, name: 'Café Pasado', price: 5.00, image: 'https://placehold.co/600x400/a3d2ca/333333?text=Caf%C3%A9', description: 'Café de grano recién pasado, el acompañante perfecto.' },
+                    { id: 5, name: 'Combo Juancho', price: 25.00, image: 'https://placehold.co/600x400/d97706/ffffff?text=Combo', description: 'Pan con chicharrón + tamal + café pasado. El desayuno completo.' },
+                    { id: 6, name: 'Jugo de Naranja', price: 6.00, image: 'https://placehold.co/600x400/f39c12/ffffff?text=Jugo', description: 'Jugo de naranja fresco, recién exprimido.' }
+                ],
+                cart: [],
+                orders: [],
+                customers: [],
+                nextOrderId: 1001,
+            };
+
+            const mainContent = document.getElementById('main-content');
+            const clientViewBtn = document.getElementById('client-view-btn');
+            const adminViewBtn = document.getElementById('admin-view-btn');
+
+            // --- LÓGICA DE VISTAS PRINCIPALES ---
+            const switchView = (view) => {
+                state.currentView = view;
+                mainContent.innerHTML = '';
+                if (view === 'client') {
+                    const template = document.getElementById('client-view-template').content.cloneNode(true);
+                    mainContent.appendChild(template);
+                    clientViewBtn.classList.add('bg-brand', 'text-white');
+                    clientViewBtn.classList.remove('bg-gray-600');
+                    adminViewBtn.classList.add('bg-gray-600');
+                    adminViewBtn.classList.remove('bg-brand', 'text-white');
+                    initClientView();
+                } else {
+                    const template = document.getElementById('admin-view-template').content.cloneNode(true);
+                    mainContent.appendChild(template);
+                    adminViewBtn.classList.add('bg-brand', 'text-white');
+                    adminViewBtn.classList.remove('bg-gray-600');
+                    clientViewBtn.classList.add('bg-gray-600');
+                    clientViewBtn.classList.remove('bg-brand', 'text-white');
+                    initAdminView();
+                }
+            };
+
+            clientViewBtn.addEventListener('click', () => switchView('client'));
+            adminViewBtn.addEventListener('click', () => switchView('admin'));
+
+            // --- LÓGICA DE LA VISTA DE CLIENTE (WEB) ---
+            const initClientView = () => {
+                renderMenuItems();
+                updateCartUI();
+                document.getElementById('cart-btn').addEventListener('click', () => document.getElementById('cart-modal').classList.remove('hidden'));
+                document.getElementById('close-cart-btn').addEventListener('click', () => document.getElementById('cart-modal').classList.add('hidden'));
+                document.getElementById('checkout-btn').addEventListener('click', () => {
+                    document.getElementById('cart-modal').classList.add('hidden');
+                    document.getElementById('checkout-modal').classList.remove('hidden');
+                });
+                document.getElementById('checkout-form').addEventListener('submit', handleCheckout);
+                document.getElementById('close-confirmation-btn').addEventListener('click', () => document.getElementById('confirmation-modal').classList.add('hidden'));
+                document.getElementById('register-crm-btn').addEventListener('click', () => {
+                    alert("¡Gracias por registrarte! Pronto recibirás noticias nuestras.");
+                    document.getElementById('confirmation-modal').classList.add('hidden');
+                });
+                // INTEGRACIÓN: Abrir chatbot
+                document.getElementById('open-chatbot-btn').addEventListener('click', () => {
+                    document.getElementById('chatbot-modal').classList.remove('hidden');
+                    initChatbot();
+                });
+                document.getElementById('close-chatbot-btn').addEventListener('click', () => document.getElementById('chatbot-modal').classList.add('hidden'));
+            };
+
+            const renderMenuItems = () => {
+                const container = document.getElementById('menu-items');
+                if(!container) return;
+                container.innerHTML = '';
+                state.products.forEach(product => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300';
+                    card.innerHTML = `<img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover"><div class="p-6"><h3 class="text-xl font-bold text-gray-800">${product.name}</h3><p class="text-gray-600 mt-2">${product.description}</p><div class="flex justify-between items-center mt-4"><span class="text-lg font-bold brand-color">S/ ${product.price.toFixed(2)}</span><button data-id="${product.id}" class="add-to-cart-btn bg-brand text-white px-4 py-2 rounded-md hover-bg-brand transition">Agregar</button></div></div>`;
+                    container.appendChild(card);
+                });
+                document.querySelectorAll('.add-to-cart-btn').forEach(btn => btn.addEventListener('click', (e) => addToCart(parseInt(e.target.dataset.id))));
+            };
+
+            const addToCart = (productId) => {
+                const product = state.products.find(p => p.id === productId);
+                const existingItem = state.cart.find(item => item.id === productId);
+                if (existingItem) existingItem.quantity++;
+                else state.cart.push({ ...product, quantity: 1 });
+                updateCartUI();
+            };
+            
+            const updateCartUI = () => {
+                if(state.currentView !== 'client') return;
+                const cartCount = document.getElementById('cart-count');
+                const cartContainer = document.getElementById('cart-items-container');
+                const cartTotalEl = document.getElementById('cart-total');
+                const checkoutBtn = document.getElementById('checkout-btn');
+                const totalItems = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+                cartCount.textContent = totalItems;
+                checkoutBtn.disabled = totalItems === 0;
+                cartContainer.innerHTML = state.cart.length === 0 ? '<p class="text-gray-500 text-center mt-8">Tu carrito está vacío.</p>' : '';
+                state.cart.forEach(item => {
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'flex items-center justify-between py-3 border-b';
+                    itemEl.innerHTML = `<div class="flex items-center"><img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-md mr-4"><div><p class="font-semibold">${item.name}</p><p class="text-sm text-gray-500">S/ ${item.price.toFixed(2)}</p></div></div><div class="flex items-center"><span class="font-semibold">${item.quantity}</span></div>`;
+                    cartContainer.appendChild(itemEl);
+                });
+                cartTotalEl.textContent = `S/ ${state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}`;
+            };
+
+            const handleCheckout = (e) => {
+                e.preventDefault();
+                const name = document.getElementById('name').value;
+                const phone = document.getElementById('phone').value;
+                const newOrder = {
+                    id: state.nextOrderId++, customerName: name, customerPhone: phone, items: [...state.cart],
+                    total: state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+                    status: 'Recibido', timestamp: new Date()
+                };
+                state.orders.push(newOrder);
+                if (!state.customers.some(c => c.phone === phone)) {
+                    state.customers.push({ name: name, phone: phone, lastOrderDate: new Date().toLocaleDateString('es-PE'), segment: 'Nuevo' });
+                }
+                state.cart = [];
+                updateCartUI();
+                document.getElementById('checkout-modal').classList.add('hidden');
+                document.getElementById('order-id-confirm').textContent = `#${newOrder.id}`;
+                document.getElementById('confirmation-modal').classList.remove('hidden');
+                e.target.reset();
+            };
+            
+            // --- LÓGICA DEL CHATBOT DE WHATSAPP ---
+            let chatbotInitialized = false;
+            let currentOrder = [];
+            const chatFlows = {
+                'start': { message: "¡Hola! 👋 Bienvenido a *Chicharronería Juancho*. Soy tu asistente virtual. ¿Cómo puedo ayudarte hoy?", options: [{ text: "Ver Menú y Pedir 📝", action: 'showMenu' }, { text: "Horario y Ubicación ⏰", action: 'showInfo' }, { text: "Preguntas Frecuentes ❓", action: 'showFaq' }, { text: "Hablar con un asesor 🙋‍♂️", action: 'humanHandoff' }] },
+                'showMenu': { message: "¡Claro! Aquí tienes nuestro menú. ¿Qué te gustaría ordenar hoy?", options: [{ text: "Pan con Chicharrón (S/15)", action: 'orderItem', payload: { name: 'Pan con Chicharrón', price: 15 } }, { text: "Combo Juancho (S/25)", action: 'orderItem', payload: { name: 'Combo Juancho', price: 25 } }, { text: "Tamal Criollo (S/8)", action: 'orderItem', payload: { name: 'Tamal Criollo', price: 8 } }, { text: "Ver mi pedido y pagar 🛒", action: 'viewOrder' }, { text: "Volver al inicio 🏠", action: 'start' }] },
+                'continueOrdering': { message: "¡Perfecto! Agregado a tu pedido. ¿Deseas algo más?", options: [{ text: "Sí, ver el menú", action: 'showMenu' }, { text: "No, ver mi pedido y pagar 🛒", action: 'viewOrder' }] },
+                'showInfo': { message: "¡Con gusto! Nos encuentras en:\n\n📍 *Dirección:* Av. Principal 123, Chilca.\n⏰ *Horario:* Lunes a Domingo de 7:00 AM a 2:00 PM.", options: [{ text: "Hacer un pedido 📝", action: 'showMenu' }, { text: "Volver al inicio 🏠", action: 'start' }] },
+                'showFaq': { message: "Selecciona una pregunta:", options: [{ text: "¿Aceptan tarjeta?", action: 'answerFaq', payload: 'Sí, aceptamos todas las tarjetas de crédito/débito, además de Yape y Plin.' }, { text: "¿Hacen delivery?", action: 'answerFaq', payload: '¡Claro! Hacemos delivery a todo Chilca. El costo varía según la distancia.' }, { text: "¿Cuál es el plato más vendido?", action: 'answerFaq', payload: 'Nuestro plato estrella es el *Pan con Chicharrón*, ¡no te lo puedes perder!' }, { text: "Volver al inicio 🏠", action: 'start' }] },
+                'humanHandoff': { message: "Entendido. En un momento uno de nuestros asesores te atenderá por este medio. ¡Gracias por tu paciencia!", options: [] }
+            };
+
+            const initChatbot = () => {
+                if (chatbotInitialized) return;
+                const chatWindow = document.getElementById('chat-window');
+                chatWindow.innerHTML = '';
+                const typingIndicator = showTypingIndicator(chatWindow);
+                setTimeout(() => {
+                    chatWindow.removeChild(typingIndicator);
+                    triggerFlow('start');
+                }, 1500);
+                chatbotInitialized = true;
+            };
+
+            const addChatMessage = (text, sender, chatWindow) => {
+                const bubble = document.createElement('div');
+                bubble.className = `w-fit max-w-[80%] p-3 rounded-lg shadow animate-pop-in ${sender === 'bot' ? 'chat-bubble-bot' : 'chat-bubble-user'}`;
+                bubble.innerHTML = text.replace(/\n/g, '<br>').replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+                chatWindow.appendChild(bubble);
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            };
+
+            const showTypingIndicator = (chatWindow) => {
+                const typingBubble = document.createElement('div');
+                typingBubble.id = 'typing-indicator';
+                typingBubble.className = 'w-fit max-w-[80%] p-3 rounded-lg shadow chat-bubble-bot';
+                typingBubble.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
+                chatWindow.appendChild(typingBubble);
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+                return typingBubble;
+            };
+
+            const renderChatOptions = (options) => {
+                const optionsContainer = document.getElementById('options-container');
+                optionsContainer.innerHTML = '';
+                if (!options || options.length === 0) return;
+                options.forEach(option => {
+                    const button = document.createElement('button');
+                    button.className = 'bg-white border border-gray-300 text-sm text-gray-700 p-2 rounded-lg hover:bg-gray-50 transition';
+                    button.innerHTML = option.text;
+                    button.onclick = () => handleChatbotAction(option.action, option.payload);
+                    optionsContainer.appendChild(button);
+                });
+            };
+
+            const handleChatbotAction = (action, payload) => {
+                const chatWindow = document.getElementById('chat-window');
+                const selectedOption = chatFlows[action] || Object.values(chatFlows).flatMap(f => f.options || []).find(o => o.action === action);
+                const userMessage = selectedOption?.text;
+                if (userMessage) addChatMessage(userMessage, 'user', chatWindow);
+                else if (action === 'orderItem') addChatMessage(payload.name, 'user', chatWindow);
+                
+                document.getElementById('options-container').innerHTML = '';
+                const typingIndicator = showTypingIndicator(chatWindow);
+
+                setTimeout(() => {
+                    chatWindow.removeChild(typingIndicator);
+                    if (action === 'orderItem') { currentOrder.push(payload); triggerFlow('continueOrdering'); }
+                    else if (action === 'viewOrder') {
+                        if (currentOrder.length === 0) { addChatMessage("Aún no has agregado nada a tu pedido.", 'bot', chatWindow); triggerFlow('showMenu'); }
+                        else {
+                            let orderSummary = "Este es tu pedido:\n\n"; let total = 0;
+                            currentOrder.forEach(item => { orderSummary += `• ${item.name} - S/${item.price.toFixed(2)}\n`; total += item.price; });
+                            orderSummary += `\n*Total: S/${total.toFixed(2)}*\n\n¿Es correcto?`;
+                            addChatMessage(orderSummary, 'bot', chatWindow);
+                            renderChatOptions([{ text: "Sí, confirmar pedido 👍", action: 'confirmOrder' }, { text: "No, seguir pidiendo", action: 'showMenu' }]);
+                        }
+                    } else if (action === 'confirmOrder') {
+                        addChatMessage("¡Pedido confirmado! 🎉 Gracias por tu compra. Lo estamos preparando.", 'bot', chatWindow);
+                        currentOrder = [];
+                        setTimeout(() => triggerFlow('start'), 3000);
+                    } else if (action === 'answerFaq') { addChatMessage(payload, 'bot', chatWindow); triggerFlow('showFaq'); }
+                    else { triggerFlow(action); }
+                }, 1200);
+            };
+            
+            const triggerFlow = (flowName) => {
+                const flow = chatFlows[flowName];
+                if (flow) {
+                    addChatMessage(flow.message, 'bot', document.getElementById('chat-window'));
+                    renderChatOptions(flow.options);
+                }
+            };
+
+            // --- LÓGICA DE LA VISTA DE ADMIN ---
+            const initAdminView = () => {
+                renderOrders(); renderCustomers(); renderCharts();
+                document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const targetId = e.currentTarget.getAttribute('href').substring(1);
+                        document.querySelectorAll('.admin-content').forEach(content => content.classList.add('hidden'));
+                        document.getElementById(`admin-${targetId}`).classList.remove('hidden');
+                        document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('bg-gray-700'));
+                        e.currentTarget.classList.add('bg-gray-700');
+                    });
+                });
+            };
+
+            const renderOrders = () => {
+                const container = document.getElementById('orders-container'); if(!container) return;
+                container.innerHTML = state.orders.length === 0 ? '<p class="text-gray-500 col-span-full text-center">No hay pedidos nuevos.</p>' : '';
+                [...state.orders].sort((a,b) => b.id - a.id).forEach(order => {
+                    const statusStyles = {'Recibido': 'bg-blue-100 text-blue-800','En preparación': 'bg-yellow-100 text-yellow-800','Listo para recoger': 'bg-green-100 text-green-800','Enviado': 'bg-purple-100 text-purple-800'};
+                    const card = document.createElement('div'); card.className = 'bg-white p-5 rounded-lg shadow-md flex flex-col';
+                    card.innerHTML = `<div class="flex justify-between items-start mb-3"><h4 class="font-bold text-lg">Pedido #${order.id}</h4><span class="px-2 py-1 text-xs font-semibold rounded-full ${statusStyles[order.status]}">${order.status}</span></div><div class="flex-grow"><p class="text-sm font-semibold">${order.customerName}</p><p class="text-sm text-gray-500">${order.customerPhone}</p><ul class="text-sm mt-3 border-t pt-2">${order.items.map(item => `<li>${item.quantity}x ${item.name}</li>`).join('')}</ul></div><div class="mt-4 border-t pt-3"><p class="text-right font-bold text-lg">Total: S/ ${order.total.toFixed(2)}</p><div class="flex space-x-2 mt-3"><button data-id="${order.id}" data-status="En preparación" class="order-status-btn flex-1 bg-yellow-500 text-white text-xs py-1 rounded hover:bg-yellow-600">En Prep.</button><button data-id="${order.id}" data-status="Listo para recoger" class="order-status-btn flex-1 bg-green-500 text-white text-xs py-1 rounded hover:bg-green-600">Listo</button><button data-id="${order.id}" data-status="Enviado" class="order-status-btn flex-1 bg-purple-500 text-white text-xs py-1 rounded hover:bg-purple-600">Enviado</button></div></div>`;
+                    container.appendChild(card);
+                });
+                document.querySelectorAll('.order-status-btn').forEach(btn => btn.addEventListener('click', (e) => {
+                    const order = state.orders.find(o => o.id === parseInt(e.target.dataset.id));
+                    if(order) { order.status = e.target.dataset.status; renderOrders(); }
+                }));
+            };
+            
+            const renderCustomers = () => {
+                const tbody = document.getElementById('customers-table-body'); if (!tbody) return; tbody.innerHTML = '';
+                state.customers.forEach(customer => {
+                    const row = document.createElement('tr'); row.className = 'border-b hover:bg-gray-50';
+                    row.innerHTML = `<td class="p-3">${customer.name}</td><td class="p-3">${customer.phone}</td><td class="p-3">${customer.lastOrderDate}</td><td class="p-3"><span class="px-2 py-1 text-xs font-semibold rounded-full ${customer.segment === 'Nuevo' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}">${customer.segment}</span></td><td class="p-3"><button class="text-sm text-brand hover:underline">Enviar Promo</button></td>`;
+                    tbody.appendChild(row);
+                });
+            };
+
+            const renderCharts = () => {
+                const topDishesCtx = document.getElementById('top-dishes-chart');
+                if(topDishesCtx) new Chart(topDishesCtx, { type: 'bar', data: { labels: ['Pan con Chicharrón', 'Combo Juancho', 'Tamal Criollo', 'Café Pasado'], datasets: [{ label: 'Unidades Vendidas', data: [120, 95, 75, 60], backgroundColor: ['#D97706', '#FBBF24', '#F59E0B', '#92400E'] }] }, options: { responsive: true, plugins: { legend: { display: false } } } });
+                const salesByDayCtx = document.getElementById('sales-by-day-chart');
+                if(salesByDayCtx) new Chart(salesByDayCtx, { type: 'line', data: { labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'], datasets: [{ label: 'Ventas (S/)', data: [300, 450, 400, 550, 800, 1500, 1800], borderColor: '#D97706', tension: 0.1, fill: true, backgroundColor: 'rgba(217, 119, 6, 0.1)' }] }, options: { responsive: true, plugins: { legend: { display: false } } } });
+            };
+
+            // --- INICIALIZACIÓN ---
+            switchView('client');
+        });
+    </script>
+
+</body>
+</html>
